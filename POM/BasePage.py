@@ -21,27 +21,24 @@ class BasePage:
             "_class": By.CLASS_NAME,
             "_linktext": By.LINK_TEXT
         }
+
         for suffix, by_type in locator_map.items():
+            log.info(f"by_type:{by_type}")
             if locator_name.endswith(suffix):
                 return by_type
         raise ValueError(f"Unknown locator type for: {locator_name}")
 
-    def get_element(self,locator_name,locator_value):
-        element = None
-        log.info(f"Getting element: {locator_name} with value: {locator_value}")
-        if locator_name.endswith("_id"):
-           element = self.wait.until(EC.visibility_of_element_located((By.ID, locator_value)))
-        elif locator_name.endswith("_name"):
-            element = self.wait.until(EC.visibility_of_element_located((By.NAME, locator_value)))
-        elif locator_name.endswith("_xpath"):
-            element = self.wait.until(EC.visibility_of_element_located((By.XPATH, locator_value)))
-        elif locator_name.endswith("_css"):
-            element = self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, locator_value)))
-        elif locator_name.endswith("_class"):
-            element =  self.wait.until(EC.visibility_of_element_located((By.CLASS_NAME, locator_value)))
-        elif locator_name.endswith("_linktext"):
-            element = self.wait.until(EC.visibility_of_element_located((By.LINK_TEXT, locator_value)))
-        return element
+
+
+    def is_element_clickable(self, locator_name, locator_value):
+        try:
+            log.info(f"Checking if element is clickable: {locator_name} with value: {locator_value}")
+
+            self.wait.until(EC.element_to_be_clickable((self._get_locator_type(locator_name), locator_value)))
+            return True
+        except Exception as e:
+            log.exception(f"is_element_clickable: element not clickable for {locator_name}={locator_value}: {e}")
+            return False
 
 
     def click_element(self,locator_name,locator_value):
@@ -49,14 +46,15 @@ class BasePage:
         element = self.get_element(locator_name,locator_value)
         element.click()
 
-    def is_element_clickable(self, locator_name, locator_value):
+    def get_element(self, locator_name, locator_value):
+        element = None
         try:
-            log.info(f"Checking if element is clickable: {locator_name} with value: {locator_value}")
-            element = self.wait.until(EC.element_to_be_clickable((self._get_locator_type(locator_name), locator_value)))
-            return True
+            log.info(f"element is available : {locator_name} with value: {locator_value}")
+            element = self.wait.until(EC.visibility_of_element_located((self._get_locator_type(locator_name), locator_value)))
+            return element
         except Exception as e:
-            log.exception(f"is_element_clickable: element not clickable for {locator_name}={locator_value}: {e}")
-            return False
+            log.exception(f"get_element: element is not available {locator_name}={locator_value}: {e}")
+            return element
 
     def type_text(self,locator_name,locator_value,text):
         log.info(f"Typing text: '{text}' into element: {locator_name} with value: {locator_value}")
@@ -96,10 +94,6 @@ class BasePage:
             WebDriverWait(self.driver, timeout).until(
                 lambda d: d.execute_script("return document.readyState") == "complete"
             )
-            # Wait for jQuery to finish (if present)
-            # WebDriverWait(driver, timeout).until(
-            #     lambda d: d.execute_script("return (typeof jQuery === 'undefined') || (jQuery.active === 0)")
-            # )
             return True
         except TimeoutException:
             print("Timeout waiting for JavaScript/jQuery to load.")

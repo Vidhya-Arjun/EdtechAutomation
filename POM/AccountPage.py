@@ -17,7 +17,7 @@ class AccountPage(BasePage):
     SignUp_page_button_xpath = "//a[@id='signup-btn']"
 
     def login_button_isAccessible(self):
-        return self.is_element_clickable("login_button_xpath",self.Login_Button_xpath)
+        return self.is_element_clickable("Login_Button_xpath",self.Login_Button_xpath)
 
     def signup_button_isAccessible(self):
         return self.is_element_clickable("Sign_Up_xpath",self.Sign_Up_xpath)

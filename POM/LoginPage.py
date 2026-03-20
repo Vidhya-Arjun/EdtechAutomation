@@ -17,7 +17,6 @@ class LoginPage(BasePage):
         self.type_text("Username_id", self.Username_id, username)
 
     def enter_password(self, password):
-        # fix: use the correct locator-name suffix for the password field
         self.type_text("Password_id", self.Password_id, password)
 
     def click_login_btn(self):

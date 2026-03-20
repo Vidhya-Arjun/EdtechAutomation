@@ -4,7 +4,6 @@ import allure
 import pytest
 import yaml
 
-from utils import logger
 from utils.logger import get_logger
 from utils.driver_factory import get_driver
 import os
