@@ -19,6 +19,6 @@ Page Object Model (POM)
 Each page functionality is encapsulated inside dedicated page classes.
 
 Data Driven Testing
-Login scenarios are executed using Excel based test data.
+Login scenarios are executed
 
 
