@@ -23,8 +23,8 @@ class BasePage:
         }
 
         for suffix, by_type in locator_map.items():
-            log.info(f"by_type:{by_type}")
             if locator_name.endswith(suffix):
+                log.info(f"by_type:{by_type}")
                 return by_type
         raise ValueError(f"Unknown locator type for: {locator_name}")
 
@@ -33,7 +33,7 @@ class BasePage:
     def is_element_clickable(self, locator_name, locator_value):
         try:
             log.info(f"Checking if element is clickable: {locator_name} with value: {locator_value}")
-
+            self.driver.save_screenshot("headless_debug.png")
             self.wait.until(EC.element_to_be_clickable((self._get_locator_type(locator_name), locator_value)))
             return True
         except Exception as e:
@@ -41,9 +41,15 @@ class BasePage:
             return False
 
 
-    def click_element(self,locator_name,locator_value):
-        log.info(f"Clicking element: {locator_name} with value: {locator_value}")
-        element = self.get_element(locator_name,locator_value)
+
+    def click_element(self, locator_name, locator_value):
+        log.info(f"Clicking element: {locator_name} -> {locator_value}")
+
+        element = self.wait.until(
+            EC.element_to_be_clickable(
+                (self._get_locator_type(locator_name), locator_value)
+            )
+        )
         element.click()
 
     def get_element(self, locator_name, locator_value):
@@ -65,10 +71,6 @@ class BasePage:
         element.send_keys(text)
 
     def retrieve_element_text(self,locator_name,locator_value):
-        element = self.get_element(locator_name,locator_value)
-        return element.text
-
-    def retrieve_list_of_element_text(self,locator_name,locator_value):
         element = self.get_element(locator_name,locator_value)
         return element.text
 

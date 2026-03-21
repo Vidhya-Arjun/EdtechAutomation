@@ -6,9 +6,14 @@ def get_driver(browser):
     if browser == "chrome":
         options = Options()
         options.add_argument("--incognito")
+        options.add_argument("--start-maximized")
         options.add_argument("--window-size=1920,1080")
-        options.add_argument("--headless")
-        return webdriver.Chrome(options=options)
+        options.add_argument("--disable-dev-shm-usage")
+        driver = webdriver.Chrome(options=options)
+        driver.set_window_size(1920, 1080)
+        driver.implicitly_wait(5)
+        return driver
+
     elif browser == "firefox":
         options = Options()
         options.add_argument("-private")
