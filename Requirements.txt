@@ -1,6 +1,5 @@
 selenium
 pytest
-openpyxl
 allure-pytest
 pytest-selenium
 pyyaml

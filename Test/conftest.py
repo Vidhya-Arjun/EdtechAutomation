@@ -1,0 +1,56 @@
+import datetime
+
+import allure
+import pytest
+import yaml
+
+from utils.logger import get_logger
+from utils.driver_factory import get_driver
+import os
+from datetime import datetime
+from pathlib import Path
+
+
+log = get_logger()
+
+@pytest.fixture(scope="session")
+def config():
+    base_dir = Path(__file__).resolve().parent.parent
+    config_path = base_dir / "configs" / "config.yaml"
+    with open(config_path) as file:
+        return yaml.safe_load(file)
+
+@pytest.fixture(scope="function")
+def driver(config):
+    log.info("Launching browser")
+    driver = get_driver(config['browser'])
+    driver.maximize_window()
+    driver.get(config["base_url"])
+    yield driver
+    log.info("session closure")
+    driver.quit()
+
+# Create dynamic report file
+def pytest_configure(config):
+    report_dir = "Reports"
+    os.makedirs(report_dir, exist_ok=True)
+
+    timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    report_file = os.path.join(report_dir, f"Test_Report_{timestamp}.html")
+
+    config.option.htmlpath = report_file
+    config.option.self_contained_html = True
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    rep = outcome.get_result()
+
+    if rep.when == "call" and rep.failed:
+        driver = item.funcargs.get("driver")
+
+        if driver:
+            screenshot = driver.get_screenshot_as_png()
+            allure.attach(screenshot, name="Failure Screenshot", attachment_type=allure.attachment_type.PNG)
+
