@@ -50,11 +50,12 @@ class BasePage:
         element = None
         try:
             log.info(f"element is available : {locator_name} with value: {locator_value}")
-            element = self.wait.until(EC.visibility_of_element_located((self._get_locator_type(locator_name), locator_value)))
+            element = self.wait.until( EC.presence_of_element_located((self._get_locator_type(locator_name), locator_value)))
             return element
         except Exception as e:
             log.exception(f"get_element: element is not available {locator_name}={locator_value}: {e}")
             return element
+
 
     def type_text(self,locator_name,locator_value,text):
         log.info(f"Typing text: '{text}' into element: {locator_name} with value: {locator_value}")
