@@ -21,4 +21,4 @@ Each page functionality is encapsulated inside dedicated page classes.
 Data Driven Testing
 Login scenarios are executed
 
-
+9 out of 10 testcases passed in non headless mode , whereas in headless mode despite giving maximize window and adding maximum port size, verifiying form screenshot in headless mode it takes default mobile view.
